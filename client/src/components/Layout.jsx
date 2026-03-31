@@ -24,7 +24,7 @@ export default function Layout() {
 
   useEffect(() => {
     fetchChannels()
-  }, [channels])
+  }, [])
 
   const fetchChannels = async () => {
     try {
