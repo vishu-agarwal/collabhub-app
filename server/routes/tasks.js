@@ -5,7 +5,8 @@ const authMiddleware = require('../middleware/auth');
 
 router.get('/:channelId', authMiddleware, async (req, res) => {
   try {
-    const tasks = await Task.find({ channelId: req.params.channelId });
+    const tasks = await Task.find({ channelId: req.params.channelId })
+      .populate('assignedUser', 'username email');
     res.json({ tasks });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -25,6 +26,7 @@ router.post('/create', authMiddleware, async (req, res) => {
     });
 
     await task.save();
+    await task.populate('assignedUser', 'username email');
     res.status(201).json(task);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -37,8 +39,9 @@ router.put('/update/:id', authMiddleware, async (req, res) => {
 
     const task = await Task.findByIdAndUpdate(
       req.params.id,
-      { status, assignedUser: assignedTo }
-    );
+      { status, assignedUser: assignedTo },
+      { new: true }
+    ).populate('assignedUser', 'username email');
 
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });

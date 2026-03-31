@@ -95,6 +95,10 @@ export default function ChannelDetail() {
       fetchTasks()
     })
 
+    return () => {
+      socket.off('newMessage')
+      socket.off('task_update')
+    }
   }, [id])
 
   useEffect(() => {
@@ -131,7 +135,7 @@ export default function ChannelDetail() {
       const res = await axios.get(`${API_URL}/tasks/${id}`, {
         headers: { Authorization: token }
       })
-      setTasks(res.data)
+      setTasks(Array.isArray(res.data?.tasks) ? res.data.tasks : [])
     } catch (err) { console.error(err) }
   }
 
@@ -195,6 +199,10 @@ export default function ChannelDetail() {
         { status: newStatus },
         { headers: { Authorization: token } }
       )
+      setTasks(prev => prev.map(task => (
+        task._id === taskId ? { ...task, status: newStatus } : task
+      )))
+      fetchTasks()
     } catch (err) { console.error(err) }
   }
 
