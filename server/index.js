@@ -34,11 +34,12 @@ io.on('connection', (socket) => {
 
   socket.on('joinChannel', (channelId) => {
     console.log(`User wants to join channel ${channelId}`);
+    socket.join(channelId);
   });
 
   socket.on('sendMessage', (data) => {
-    io.emit('newMessage', data);
-    io.emit('newMessage', data);
+    if (!data?.channelId) return;
+    io.to(data.channelId).emit('newMessage', data);
   });
 
   socket.on('taskUpdated', (data) => {

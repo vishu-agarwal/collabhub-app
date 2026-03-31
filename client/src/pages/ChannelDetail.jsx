@@ -158,7 +158,6 @@ export default function ChannelDetail() {
       timestamp: new Date()
     }
 
-    setMessages(prev => [...prev, msgData])
     socket.emit('sendMessage', msgData)
 
     try {
